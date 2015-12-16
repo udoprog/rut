@@ -432,6 +432,20 @@ public class RouterTest {
     assertThat(result.paramType(1), is(PATH));
   }
 
+  @Test
+  public void testMethodPriorityIssue() {
+    final Router<String> router =
+        Router.builder(String.class)
+        .route("OPTIONS", "/<rest:path>", "")
+        .route("GET", "/loser", "")
+        .build();
+
+    final Router.Result<String> result = router.result();
+    assertThat(router.route("OPTIONS", "/winner", result), is(SUCCESS));
+    // XXX: should match?
+    assertThat(router.route("OPTIONS", "/loser", result), is(SUCCESS));
+  }
+
   private List<String> p(final String... params) {
     return asList(params);
   }
